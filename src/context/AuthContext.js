@@ -85,7 +85,7 @@ export function AuthProvider({ children }) {
         session?.user?.email?.split("@")[0] ||
         "",
       signIn: async (email, password) => {
-        const client = getSupabase();
+        const client = await ensureSupabase();
         if (!client) throw new Error("Supabase is not configured. Add env vars from .env.example");
         const { data, error } = await client.auth.signInWithPassword({ email, password });
         if (error) throw error;

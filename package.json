@@ -57,7 +57,7 @@
   "scripts": {
     "start": "cross-env PUBLIC_URL=/ react-scripts start",
     "dev:vercel": "vercel dev --listen 3000 --yes",
-    "build": "cross-env CI=false GENERATE_SOURCEMAP=false PUBLIC_URL=/ react-scripts build",
+    "build": "node scripts/build.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"

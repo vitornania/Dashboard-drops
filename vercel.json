@@ -1,11 +1,11 @@
 {
   "installCommand": "npm install --legacy-peer-deps",
-  "buildCommand": "npm run build",
+  "buildCommand": "node scripts/build.js",
   "devCommand": "cross-env PUBLIC_URL=/ react-scripts start",
   "outputDirectory": "build",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/static/(.*)", "destination": "/static/$1" },
-    { "source": "/((?!api/|static/|favicon\\.png|manifest\\.json|asset-manifest\\.json|.*\\..*).*)", "destination": "/index.html" }
+    { "source": "/((?!api/|static/|favicon\\.png|manifest\\.json|asset-manifest\\.json|supabase-config\\.json|.*\\..*).*)", "destination": "/index.html" }
   ]
 }

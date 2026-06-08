@@ -11,12 +11,32 @@ export function isSupabaseConfigured() {
   return Boolean(supabase);
 }
 
-async function loadRuntimeConfig() {
-  const response = await fetch("/api/config/public");
+function createSupabaseClient(url, key) {
+  supabase = createClient(url, key);
+  return supabase;
+}
+
+async function fetchJsonConfig(url) {
+  const response = await fetch(url);
   if (!response.ok) return null;
   const data = await response.json();
   if (!data.supabaseUrl || !data.supabaseAnonKey) return null;
   return { url: data.supabaseUrl, key: data.supabaseAnonKey };
+}
+
+async function loadRuntimeConfig() {
+  const sources = ["/supabase-config.json", "/api/supabase-config"];
+
+  for (const source of sources) {
+    try {
+      const config = await fetchJsonConfig(source);
+      if (config) return config;
+    } catch (err) {
+      console.warn(`Supabase config fetch failed: ${source}`, err);
+    }
+  }
+
+  return null;
 }
 
 export async function ensureSupabase() {
@@ -28,14 +48,13 @@ export async function ensureSupabase() {
     const buildKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "";
 
     if (buildUrl && buildKey) {
-      supabase = createClient(buildUrl, buildKey);
-      return supabase;
+      return createSupabaseClient(buildUrl, buildKey);
     }
 
     try {
       const runtime = await loadRuntimeConfig();
       if (runtime) {
-        supabase = createClient(runtime.url, runtime.key);
+        return createSupabaseClient(runtime.url, runtime.key);
       }
     } catch (err) {
       console.error("Failed to load Supabase config", err);
@@ -47,5 +66,4 @@ export async function ensureSupabase() {
   return initPromise;
 }
 
-// Legacy export — use getSupabase() after ensureSupabase()
 export { supabase };

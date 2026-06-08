@@ -14,9 +14,10 @@ import borders from "assets/theme/base/borders";
 import CoverLayout from "layouts/authentication/components/CoverLayout";
 import bgSignIn from "assets/images/signInImage.png";
 import { useAuth } from "context/AuthContext";
+import { ensureSupabase, isSupabaseConfigured } from "lib/supabaseClient";
 
 function SignIn() {
-  const { signIn, session, isConfigured } = useAuth();
+  const { signIn, session } = useAuth();
   const history = useHistory();
   const [rememberMe, setRememberMe] = useState(true);
   const [email, setEmail] = useState(() => localStorage.getItem("dropship_ops_email") || "");
@@ -38,7 +39,10 @@ function SignIn() {
     setError("");
     setSubmitting(true);
     try {
-      if (!isConfigured) throw new Error("Supabase is not configured. Add env vars from .env.example");
+      await ensureSupabase();
+      if (!isSupabaseConfigured()) {
+        throw new Error("Supabase is not configured. Add env vars from .env.example");
+      }
       await signIn(email, password);
       if (rememberMe) localStorage.setItem("dropship_ops_email", email);
       else localStorage.removeItem("dropship_ops_email");
