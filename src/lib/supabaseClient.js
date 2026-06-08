@@ -25,7 +25,11 @@ async function fetchJsonConfig(url) {
 }
 
 async function loadRuntimeConfig() {
-  const sources = ["/supabase-config.json", "/api/supabase-config"];
+  const sources = [
+    "/supabase-config.json",
+    "/api/supabase-config",
+    "/api/shopify/status?bootstrap=supabase",
+  ];
 
   for (const source of sources) {
     try {
