@@ -14,7 +14,7 @@
     "url": "git+https://github.com/vitornania/dropship-ops-dashboard.git"
   },
   "engines": {
-    "node": ">=18"
+    "node": "20.x"
   },
   "dependencies": {
     "@emotion/cache": "11.4.0",
@@ -52,13 +52,12 @@
     "@testing-library/user-event": "12.1.10",
     "cross-env": "^7.0.3",
     "eslint": "^7.11.0",
-    "react-scripts": "5.0.1",
-    "vercel": "^54.9.1"
+    "react-scripts": "5.0.1"
   },
   "scripts": {
     "start": "cross-env PUBLIC_URL=/ react-scripts start",
     "dev:vercel": "vercel dev --listen 3000 --yes",
-    "build": "cross-env PUBLIC_URL=/ react-scripts build",
+    "build": "cross-env CI=false GENERATE_SOURCEMAP=false PUBLIC_URL=/ react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "install:clean": "rm -rf node_modules/ && rm -rf package-lock.json && npm install && npm start"
