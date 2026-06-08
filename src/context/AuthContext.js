@@ -6,6 +6,7 @@ const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const [session, setSession] = useState(null);
+  const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -41,11 +42,42 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
+  useEffect(() => {
+    if (!supabase || !session?.user?.id) {
+      setProfile(null);
+      return undefined;
+    }
+
+    let active = true;
+
+    supabase
+      .from("profiles")
+      .select("display_name, avatar_color")
+      .eq("id", session.user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active) setProfile(data);
+      })
+      .catch(() => {
+        if (active) setProfile(null);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [session?.user?.id]);
+
   const value = useMemo(
     () => ({
       session,
+      profile,
       loading,
       isConfigured: isSupabaseConfigured,
+      displayName:
+        profile?.display_name ||
+        session?.user?.user_metadata?.display_name ||
+        session?.user?.email?.split("@")[0] ||
+        "",
       signIn: async (email, password) => {
         if (!supabase) throw new Error("Supabase is not configured");
         const { data, error } = await supabase.auth.signInWithPassword({ email, password });
@@ -62,7 +94,7 @@ export function AuthProvider({ children }) {
         return data.session?.access_token ?? null;
       },
     }),
-    [session, loading]
+    [session, profile, loading]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

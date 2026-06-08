@@ -49,17 +49,16 @@ export default function App() {
   const [controller, dispatch] = useVisionUIController();
   const { miniSidenav, direction, layout, sidenavColor } = controller;
   const [onMouseEnter, setOnMouseEnter] = useState(false);
-  const [rtlCache, setRtlCache] = useState(null);
+  const rtlCache = useMemo(
+    () =>
+      createCache({
+        key: "rtl",
+        stylisPlugins: [rtlPlugin],
+      }),
+    []
+  );
   const { pathname } = useLocation();
   const { session } = useAuth();
-
-  useMemo(() => {
-    const cacheRtl = createCache({
-      key: "rtl",
-      stylisPlugins: [rtlPlugin],
-    });
-    setRtlCache(cacheRtl);
-  }, []);
 
   const handleOnMouseEnter = () => {
     if (miniSidenav && !onMouseEnter) {

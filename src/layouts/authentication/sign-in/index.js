@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Redirect } from "react-router-dom";
+import { Redirect, useHistory } from "react-router-dom";
 
 import VuiBox from "components/VuiBox";
 import VuiTypography from "components/VuiTypography";
@@ -17,8 +17,9 @@ import { useAuth } from "context/AuthContext";
 
 function SignIn() {
   const { signIn, session, isConfigured } = useAuth();
+  const history = useHistory();
   const [rememberMe, setRememberMe] = useState(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => localStorage.getItem("dropship_ops_email") || "");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -41,6 +42,7 @@ function SignIn() {
       await signIn(email, password);
       if (rememberMe) localStorage.setItem("dropship_ops_email", email);
       else localStorage.removeItem("dropship_ops_email");
+      history.replace("/revenue");
     } catch (err) {
       setError(err.message);
     } finally {
