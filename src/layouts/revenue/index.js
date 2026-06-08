@@ -29,6 +29,15 @@ function Revenue() {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [costForm, setCostForm] = useState({ category: "ad_spend", amount: "", note: "", cost_date: new Date().toISOString().slice(0, 10) });
   const [error, setError] = useState("");
+  const [syncing, setSyncing] = useState(false);
+
+  const syncOrders = async () => {
+    try {
+      return await apiFetch("/api/cron/sync-orders", { method: "GET" });
+    } catch {
+      return null;
+    }
+  };
 
   const loadMetrics = async () => {
     try {
@@ -44,8 +53,24 @@ function Revenue() {
   };
 
   useEffect(() => {
-    loadMetrics();
+    let active = true;
+    (async () => {
+      setSyncing(true);
+      await syncOrders();
+      if (active) setSyncing(false);
+      loadMetrics();
+    })();
+    return () => {
+      active = false;
+    };
   }, []);
+
+  const handleRefresh = async () => {
+    setSyncing(true);
+    await syncOrders();
+    await loadMetrics();
+    setSyncing(false);
+  };
 
   const chartData = [
     {
@@ -98,9 +123,14 @@ function Revenue() {
               Shopify performance & profit tracking
             </VuiTypography>
           </VuiBox>
-          <VuiButton color="info" onClick={() => setDrawerOpen(true)}>
-            Add cost / ad spend
-          </VuiButton>
+          <VuiBox display="flex" gap={1}>
+            <VuiButton color="secondary" onClick={handleRefresh} disabled={syncing}>
+              {syncing ? "Syncing..." : "Refresh orders"}
+            </VuiButton>
+            <VuiButton color="info" onClick={() => setDrawerOpen(true)}>
+              Add cost / ad spend
+            </VuiButton>
+          </VuiBox>
         </VuiBox>
 
         {error && (

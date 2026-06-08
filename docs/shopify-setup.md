@@ -31,7 +31,7 @@ Register webhook `orders/create` and `orders/updated` pointing to:
 
 `https://YOUR-VERCEL-APP.vercel.app/api/shopify/webhooks/orders`
 
-Orders also sync via Vercel Cron once daily (06:00 UTC on Hobby; upgrade to Pro for every 30 minutes).
+Orders sync via Shopify webhooks (real-time), GitHub Actions every 6 hours (free), or **Sync orders now** in Settings.
 
 ## 3. Environment variables
 

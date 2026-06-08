@@ -34,9 +34,16 @@ In the Shopify Partner app:
 - **App URL:** `https://YOUR-APP.vercel.app`
 - **Allowed redirection URL:** `https://YOUR-APP.vercel.app/api/shopify/callback`
 
-## Cron
+## Cron / scheduled sync (no Vercel Pro)
 
-`vercel.json` schedules `/api/cron/sync-orders` once daily at 06:00 UTC (Hobby plan limit). Upgrade to Pro for more frequent cron schedules.
+Vercel Hobby does not support reliable cron without Pro. Use these instead:
+
+1. **Shopify webhooks** (best) — register `orders/create` and `orders/updated` →  
+   `https://YOUR-APP.vercel.app/api/shopify/webhooks/orders`
+2. **GitHub Actions** (free) — workflow `.github/workflows/sync-orders.yml` runs every 6 hours.  
+   Add repo secrets: `APP_URL`, `CRON_SECRET` (Settings → Secrets → Actions).
+3. **Manual** — Settings or Revenue → **Sync / Refresh orders**
+4. **Auto on visit** — Revenue page syncs when you open it
 
 ## Local dev with APIs
 
