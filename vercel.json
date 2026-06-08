@@ -1,0 +1,16 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "cross-env PUBLIC_URL=/ react-scripts start",
+  "outputDirectory": "build",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1" },
+    { "source": "/static/(.*)", "destination": "/static/$1" },
+    { "source": "/((?!api/|static/|favicon\\.png|manifest\\.json|asset-manifest\\.json|.*\\..*).*)", "destination": "/index.html" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/sync-orders",
+      "schedule": "0/30 * * * *"
+    }
+  ]
+}
