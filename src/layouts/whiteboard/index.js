@@ -12,7 +12,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-import { supabase } from "lib/supabaseClient";
+import { getSupabase } from "lib/supabaseClient";
 import { useAuth } from "context/AuthContext";
 
 function BoardEditor({ board, onBack, onRename }) {
@@ -25,6 +25,8 @@ function BoardEditor({ board, onBack, onRename }) {
     async (editor) => {
       if (!editor || !board?.id) return;
       const snapshot = getSnapshot(editor.store);
+      const supabase = getSupabase();
+      if (!supabase) return;
       await supabase
         .from("whiteboards")
         .update({
@@ -39,6 +41,9 @@ function BoardEditor({ board, onBack, onRename }) {
 
   useEffect(() => {
     if (!board?.id) return undefined;
+
+    const supabase = getSupabase();
+    if (!supabase) return undefined;
 
     const channel = supabase
       .channel(`whiteboard-${board.id}`)
@@ -99,6 +104,8 @@ function Whiteboard() {
   const [error, setError] = useState("");
 
   const loadBoards = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     const { data, error: fetchError } = await supabase.from("whiteboards").select("*").order("updated_at", { ascending: false });
     if (fetchError) setError(fetchError.message);
     else setBoards(data || []);
@@ -109,6 +116,8 @@ function Whiteboard() {
   }, []);
 
   const createBoard = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     const { data, error: insertError } = await supabase
       .from("whiteboards")
       .insert({ title: titleDraft || "Untitled board", snapshot: {} })
@@ -122,13 +131,16 @@ function Whiteboard() {
   };
 
   const deleteBoard = async (id) => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     await supabase.from("whiteboards").delete().eq("id", id);
     if (activeBoard?.id === id) setActiveBoard(null);
     loadBoards();
   };
 
   const renameBoard = async (title) => {
-    if (!activeBoard) return;
+    const supabase = getSupabase();
+    if (!activeBoard || !supabase) return;
     const updated = { ...activeBoard, title };
     setActiveBoard(updated);
     await supabase.from("whiteboards").update({ title }).eq("id", activeBoard.id);

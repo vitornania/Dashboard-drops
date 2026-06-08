@@ -20,7 +20,7 @@ import LineChart from "examples/Charts/LineCharts/LineChart";
 
 import { IoWallet, IoTrendingUp, IoCart, IoStatsChart } from "react-icons/io5";
 import { formatCurrency, useApiFetch } from "lib/api";
-import { supabase } from "lib/supabaseClient";
+import { getSupabase } from "lib/supabaseClient";
 
 function Revenue() {
   const apiFetch = useApiFetch();
@@ -92,9 +92,9 @@ function Revenue() {
 
   const handleAddCost = async (e) => {
     e.preventDefault();
-    if (!supabase) return;
-    const { data: userData } = await supabase.auth.getUser();
-    const { error: insertError } = await supabase.from("manual_costs").insert({
+    if (!getSupabase()) return;
+    const { data: userData } = await getSupabase().auth.getUser();
+    const { error: insertError } = await getSupabase().from("manual_costs").insert({
       category: costForm.category,
       amount: Number(costForm.amount),
       note: costForm.note,

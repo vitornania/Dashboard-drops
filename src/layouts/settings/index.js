@@ -10,7 +10,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-import { supabase, isSupabaseConfigured } from "lib/supabaseClient";
+import { getSupabase, isSupabaseConfigured } from "lib/supabaseClient";
 import { useAuth } from "context/AuthContext";
 import { useApiFetch } from "lib/api";
 
@@ -25,6 +25,7 @@ function Settings() {
   const [syncing, setSyncing] = useState(false);
 
   const loadConnection = async () => {
+    const supabase = getSupabase();
     if (!supabase) return;
     const { data } = await supabase.from("shopify_connections").select("shop_domain,last_sync_at,scopes").limit(1).maybeSingle();
     setConnection(data);
@@ -62,6 +63,11 @@ function Settings() {
       return;
     }
     const shop = shopDomain.includes(".") ? shopDomain : `${shopDomain}.myshopify.com`;
+    const supabase = getSupabase();
+    if (!supabase) {
+      setMessage("Supabase is not configured.");
+      return;
+    }
     const { data } = await supabase.auth.getSession();
     const token = data.session?.access_token;
     if (!token) {
@@ -172,7 +178,7 @@ function Settings() {
           </VuiTypography>
           <VuiTypography color="text" component="div">
             <ul>
-              <li>Supabase: {isSupabaseConfigured ? "connected" : "missing REACT_APP_SUPABASE_* vars"}</li>
+              <li>Supabase: {isSupabaseConfigured() ? "connected" : "missing env vars on Vercel"}</li>
               <li>Shopify OAuth: {shopifyStatus?.configured ? "ready" : "needs Client ID + secret in .env.local"}</li>
               <li>Local dev: run `npm run dev:vercel` (not plain `npm start`) for API routes</li>
             </ul>

@@ -11,7 +11,7 @@ import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import Footer from "examples/Footer";
 
-import { supabase } from "lib/supabaseClient";
+import { getSupabase } from "lib/supabaseClient";
 import { useAuth } from "context/AuthContext";
 import { formatHours } from "lib/api";
 
@@ -29,6 +29,8 @@ function Team() {
   const bottomRef = useRef(null);
 
   const loadProfiles = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     const { data } = await supabase.from("profiles").select("*");
     const map = {};
     (data || []).forEach((p) => {
@@ -38,6 +40,8 @@ function Team() {
   };
 
   const loadMessages = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     const { data } = await supabase
       .from("chat_messages")
       .select("*")
@@ -48,12 +52,15 @@ function Team() {
   };
 
   const loadSessions = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     const { data } = await supabase.from("time_sessions").select("*").order("clock_in", { ascending: false }).limit(50);
     setSessions(data || []);
     setActiveSession((data || []).find((s) => !s.clock_out && s.user_id === userId) || null);
   };
 
   useEffect(() => {
+    const supabase = getSupabase();
     if (!supabase) return undefined;
     loadProfiles();
     loadMessages();
@@ -79,7 +86,8 @@ function Team() {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (!body.trim() || !userId) return;
+    const supabase = getSupabase();
+    if (!body.trim() || !userId || !supabase) return;
     const { error: insertError } = await supabase.from("chat_messages").insert({
       channel_id: CHANNEL_ID,
       sender_id: userId,
@@ -90,13 +98,16 @@ function Team() {
   };
 
   const clockIn = async () => {
+    const supabase = getSupabase();
+    if (!supabase) return;
     const { error: insertError } = await supabase.from("time_sessions").insert({ user_id: userId });
     if (insertError) setError(insertError.message);
     else loadSessions();
   };
 
   const clockOut = async () => {
-    if (!activeSession) return;
+    const supabase = getSupabase();
+    if (!activeSession || !supabase) return;
     const { error: updateError } = await supabase
       .from("time_sessions")
       .update({ clock_out: new Date().toISOString() })

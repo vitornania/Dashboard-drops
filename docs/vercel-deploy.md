@@ -18,6 +18,7 @@ Add these in **Project → Settings → Environment Variables** for **Production
 | `REACT_APP_SUPABASE_URL` | Supabase project URL |
 | `REACT_APP_SUPABASE_ANON_KEY` | Supabase anon key (safe for browser) |
 | `SUPABASE_URL` | Same as `REACT_APP_SUPABASE_URL` |
+| `SUPABASE_ANON_KEY` | Same anon key (server runtime config fallback) |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only; never expose to client |
 | `SHOPIFY_API_KEY` | Shopify app Client ID |
 | `SHOPIFY_API_SECRET` | Shopify app Client secret |
