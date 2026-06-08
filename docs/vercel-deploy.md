@@ -36,7 +36,7 @@ In the Shopify Partner app:
 
 ## Cron
 
-`vercel.json` schedules `/api/cron/sync-orders` every 30 minutes. Requires a Vercel plan that supports cron jobs.
+`vercel.json` schedules `/api/cron/sync-orders` once daily at 06:00 UTC (Hobby plan limit). Upgrade to Pro for more frequent cron schedules.
 
 ## Local dev with APIs
 
